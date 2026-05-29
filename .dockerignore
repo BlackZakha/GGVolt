@@ -1,0 +1,24 @@
+# VS / IDE cachesи
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+*.slnx
+
+# Compiled artifatcs
+bin/
+obj/
+publish/
+
+# Git
+.git/
+.gitignore
+*.md
+LICENSE
+
+# Docker
+compose.yaml
+docker-compose*.yml
+Dockerfile
+.dockerignore
