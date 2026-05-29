@@ -1,0 +1,54 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:GGVolt.Client.ViewModels"
+             xmlns:models="using:GGVolt.Client.Models"
+             x:Class="GGVolt.Client.Views.StoreView"
+             x:DataType="vm:StoreViewModel"
+             Padding="24">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="28">
+            <!-- HERO -->
+            <Border Height="220" Background="{StaticResource BG.Hover}" CornerRadius="{StaticResource Radius.Md}" Padding="28"
+                    BorderBrush="{StaticResource Border.Weak}" BorderThickness="1">
+                <StackPanel VerticalAlignment="Center" Spacing="10">
+                    <TextBlock Text="🔥 РЕКОМЕНДУЕМОЕ" Foreground="{StaticResource Text.Secondary}" FontSize="13" FontFamily="{StaticResource Font.Mono}"/>
+                    <TextBlock Text="CyberCore: System Overload" Foreground="{StaticResource Text.Primary}" 
+                               FontFamily="{StaticResource Font.Heading}" FontSize="36" FontWeight="Bold"/>
+                    <TextBlock Text="Мощный системный утилит с продвинутым мониторингом и игровым режимом" 
+                               Foreground="{StaticResource Text.Secondary}" FontSize="15" Margin="0,4,0,12"/>
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <Button Classes="GGVoltBtnPrimary" Content="Скачать бесплатно" Width="180"/>
+                        <Button Classes="GGVoltBtnSecondary" Content="Подробнее"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- СПИСОК -->
+            <TextBlock Text="Популярное сегодня" Foreground="{StaticResource Text.Primary}" 
+                       FontFamily="{StaticResource Font.Heading}" FontSize="24" FontWeight="SemiBold"/>
+            
+            <ItemsControl ItemsSource="{Binding Items}" HorizontalAlignment="Stretch">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel HorizontalAlignment="Stretch" VerticalAlignment="Top" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="models:CatalogItem">
+                        <Border Classes="GGVoltCard" Width="230" Height="260" Margin="0,0,16,16">
+                            <StackPanel Spacing="10">
+                                <Border Height="130" Background="{StaticResource BG.Hover}" CornerRadius="6"/>
+                                <TextBlock Text="{Binding Title}" Foreground="{StaticResource Text.Primary}" 
+                                           FontFamily="{StaticResource Font.Heading}" FontSize="16"/>
+                                <TextBlock Text="{Binding Subtitle}" Foreground="{StaticResource Text.Secondary}" FontSize="12"/>
+                                <ProgressBar Classes="GGVoltProgress" Value="{Binding Progress}" Maximum="100" Height="4"
+                                             IsVisible="{Binding IsDownloading}"/>
+                                <Button Classes="GGVoltBtnSecondary" Content="{Binding ActionText}" HorizontalAlignment="Stretch"/>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

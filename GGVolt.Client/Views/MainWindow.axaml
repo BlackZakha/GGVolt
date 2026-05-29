@@ -1,0 +1,99 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:GGVolt.Client.ViewModels"
+        x:Class="GGVolt.Client.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="GGVolt"
+        Width="1200" Height="800"
+        MinWidth="960" MinHeight="600"
+        WindowStartupLocation="CenterScreen"
+        TransparencyLevelHint="AcrylicBlur"
+        SystemDecorations="None"
+        ExtendClientAreaToDecorationsHint="True"
+        Background="#770B0C10">
+
+    <Window.DataContext>
+        <vm:MainWindowViewModel/>
+    </Window.DataContext>
+
+    <Grid ColumnDefinitions="240,*">
+        <!-- 🟦 SIDEBAR -->
+        <Border Grid.Column="0" Background="{StaticResource BG.Surface}" 
+                BorderBrush="{StaticResource Border.Weak}" BorderThickness="0,0,1,0">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Spacing="12" Margin="16,24,16,16">
+                    <TextBlock Text="GGVolt" FontFamily="{StaticResource Font.Heading}" FontSize="28" FontWeight="Bold" 
+                               Foreground="{StaticResource Volt.Cyan}" HorizontalAlignment="Center"/>
+                    <Image Source="/Assets/logo.ico" Height="" Margin="0,-50,0,-30"/>
+                    
+                    <Button Classes="GGVoltBtnSecondary" Content="Магазин" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" 
+                            Command="{Binding NavigateToStoreCommand}"/>
+                    <Button Classes="GGVoltBtnSecondary" Content="Библиотека" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                            Command="{Binding NavigateToLibraryCommand}"/>
+                    <Button Classes="GGVoltBtnSecondary" Content="Сообщество" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                            Command="{Binding NavigateToLibraryCommand}"/> <!-- временно -->
+                    <Button Classes="GGVoltBtnSecondary" Content="Настройки" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                            Command="{Binding NavigateToSettingsCommand}"/>
+                    
+                    <Border Height="1" Background="{StaticResource Border.Weak}" Margin="0,12"/>
+                    <Button Classes="GGVoltBtnPrimary" Content="Войти в аккаунт" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/> 
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+
+        <!-- 🟦 MAIN AREA -->
+        <Grid Grid.Column="1" RowDefinitions="Auto,*,Auto">
+            
+            <!-- HEADER -->
+            <Border Grid.Row="0" Background="{StaticResource BG.Surface}" 
+                    BorderBrush="{StaticResource Border.Weak}" BorderThickness="0,0,0,1" Padding="20,14">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBox Classes="GGVoltInput" Grid.Column="0" Watermark="🔍 Поиск игр, утилит и дополнений..." Margin="0,0,16,0"/>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="14" VerticalAlignment="Center">
+                        <TextBlock Text="💳 0 ₽" Foreground="{StaticResource Text.Primary}" VerticalAlignment="Center" FontSize="14"/>
+                        <Button Classes="GGVoltBtnSecondary" Content="🔔" Padding="8"/>
+                        <StackPanel Orientation="Horizontal" Height="28" Spacing="1">
+                            <Button Content="󰖰" 
+                                    VerticalContentAlignment="Center"
+                                    Background="#FF0852A4"
+                                    FontSize="16"
+                                    Width="30"
+                                    Click="MinimizeClickButton"/>
+                            <Button Content="󰖯" 
+                                    VerticalContentAlignment="Center"
+                                    Background="#FF0852A4"
+                                    FontSize="16"
+                                    Width="30"
+                                    x:Name="MaximizeButton"
+                                    Click="MaximizeClickButton"/>
+                            <Button Content="󰖭" 
+                                    HorizontalContentAlignment="Center"
+                                    Background="#FFA40808"
+                                    Width="30"
+                                    FontSize="16"
+                                    Click="CloseClickButton"
+                                    Margin="0,0,8,0"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- 🟦 CONTENT AREA (НАВИГАЦИЯ) -->
+            <ContentControl Grid.Row="1" Content="{Binding CurrentPage}" VerticalContentAlignment="Stretch"/>
+
+            <!-- FOOTER -->
+            <Border Grid.Row="2" Background="{StaticResource BG.Surface}" 
+                    BorderBrush="{StaticResource Border.Weak}" BorderThickness="0,1,0,0" Padding="16,10">
+                <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                        <TextBlock Text="⬇ Загрузка: 0%" Foreground="{StaticResource Text.Secondary}" FontSize="12"/>
+                        <ProgressBar Classes="GGVoltProgress" Value="0" Maximum="100" Width="220" Height="4"/>
+                    </StackPanel>
+                    <TextBlock Text="GGVolt v0.1.0-alpha | 🟢 Online" 
+                               Foreground="{StaticResource Text.Secondary}" FontFamily="{StaticResource Font.Mono}" 
+                               FontSize="11" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>

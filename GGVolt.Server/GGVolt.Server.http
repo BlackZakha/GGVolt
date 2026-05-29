@@ -1,0 +1,6 @@
+@GGVolt.Server_HostAddress = http://localhost:5222
+
+GET {{GGVolt.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

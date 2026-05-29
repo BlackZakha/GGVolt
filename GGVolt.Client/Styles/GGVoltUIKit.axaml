@@ -1,0 +1,105 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- 🟦 КНОПКА PRIMARY: Базовый -->
+    <Style x:Key="GGVoltBtnPrimary" Selector="Button.GGVoltBtnPrimary">
+        <Setter Property="Background" Value="{StaticResource BG.Hover}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource Volt.Cyan}"/>
+        <Setter Property="Foreground" Value="{StaticResource Volt.Cyan}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="{StaticResource Radius.Sm}"/>
+        <Setter Property="Padding" Value="16,10"/>
+        <Setter Property="FontFamily" Value="{StaticResource Font.Body}"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.15"/>
+                <BrushTransition Property="BorderBrush" Duration="0:0:0.15"/>
+            </Transitions>
+        </Setter>
+    </Style>
+
+    <!-- 🟦 КНОПКА PRIMARY: Hover -->
+    <Style x:Key="GGVoltBtnPrimaryHover" Selector="Button.GGVoltBtnPrimary:pointerover">
+        <Setter Property="Background" Value="{StaticResource BG.Surface}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource Volt.Cyan}"/>
+        <Setter Property="Foreground" Value="{StaticResource Volt.Cyan}"/>
+    </Style>
+
+    <!-- 🟦 КНОПКА PRIMARY: Pressed -->
+    <Style x:Key="GGVoltBtnPrimaryPressed" Selector="Button.GGVoltBtnPrimary:pressed">
+        <Setter Property="Background" Value="{StaticResource BG.Hover}"/>
+        <Setter Property="BorderThickness" Value="2"/>
+        <Setter Property="Padding" Value="15,9"/>
+    </Style>
+
+    <!-- 🟦 КНОПКА SECONDARY: Базовый -->
+    <Style x:Key="GGVoltBtnSecondary" Selector="Button.GGVoltBtnSecondary">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="{StaticResource Border.Weak}"/>
+        <Setter Property="Foreground" Value="{StaticResource Text.Primary}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="{StaticResource Radius.Sm}"/>
+        <Setter Property="Padding" Value="12,8"/>
+        <Setter Property="FontFamily" Value="{StaticResource Font.Body}"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="BorderBrush" Duration="0:0:0.15"/>
+                <BrushTransition Property="Foreground" Duration="0:0:0.15"/>
+            </Transitions>
+        </Setter>
+    </Style>
+
+    <!-- 🟦 КНОПКА SECONDARY: Hover -->
+    <Style x:Key="GGVoltBtnSecondaryHover" Selector="Button.GGVoltBtnSecondary:pointerover">
+        <Setter Property="BorderBrush" Value="{StaticResource Volt.Cyan}"/>
+        <Setter Property="Foreground" Value="{StaticResource Volt.Cyan}"/>
+    </Style>
+
+    <!-- 🟦 КАРТОЧКА: Базовый -->
+    <Style x:Key="GGVoltCard" Selector="Border.GGVoltCard">
+        <Setter Property="Background" Value="{StaticResource BG.Surface}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource Border.Weak}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="{StaticResource Radius.Md}"/>
+        <Setter Property="Padding" Value="12"/>
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="BorderBrush" Duration="0:0:0.15"/>
+                <DoubleTransition Property="Opacity" Duration="0:0:0.15"/>
+            </Transitions>
+        </Setter>
+    </Style>
+
+    <!-- 🟦 КАРТОЧКА: Hover -->
+    <Style x:Key="GGVoltCardHover" Selector="Border.GGVoltCard:pointerover">
+        <Setter Property="BorderBrush" Value="{StaticResource Volt.Cyan}"/>
+        <Setter Property="Opacity" Value="0.95"/>
+    </Style>
+
+    <!-- 🟦 ПОЛЕ ВВОДА: Базовый -->
+    <Style x:Key="GGVoltInput" Selector="TextBox.GGVoltInput">
+        <Setter Property="Background" Value="#0F1118"/>
+        <Setter Property="Foreground" Value="{StaticResource Text.Primary}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource Border.Weak}"/>
+        <Setter Property="BorderThickness" Value="0,0,0,2"/>
+        <Setter Property="CornerRadius" Value="{StaticResource Radius.Sm}"/>
+        <Setter Property="Padding" Value="14,10"/>
+        <Setter Property="FontFamily" Value="{StaticResource Font.Body}"/>
+        <Setter Property="CaretBrush" Value="{StaticResource Volt.Cyan}"/>
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="BorderBrush" Duration="0:0:0.15"/>
+            </Transitions>
+        </Setter>
+    </Style>
+
+    <!-- 🟦 ПОЛЕ ВВОДА: Focus -->
+    <Style x:Key="GGVoltInputFocus" Selector="TextBox.GGVoltInput:focus">
+        <Setter Property="BorderBrush" Value="{StaticResource Volt.Cyan}"/>
+    </Style>
+
+</ResourceDictionary>

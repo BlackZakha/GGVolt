@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="compose.yaml" />
+  </Folder>
+  <Project Path="GGVolt.Client/GGVolt.Client.csproj" />
+  <Project Path="GGVolt.Core/GGVolt.Core.csproj" />
+  <Project Path="GGVolt.Infrastructure/GGVolt.Infrastructure.csproj" />
+  <Project Path="GGVolt.Server/GGVolt.Server.csproj" />
+</Solution>

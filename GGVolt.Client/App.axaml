@@ -1,0 +1,65 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:GGVolt.Client.ViewModels"
+             xmlns:views="using:GGVolt.Client.Views"
+             x:Class="GGVolt.Client.App"
+             xmlns:local="using:GGVolt.Client"
+             RequestedThemeVariant="Dark">
+             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+
+    <Application.DataTemplates>
+        <local:ViewLocator/>
+    </Application.DataTemplates>
+  
+    <Application.Styles>
+        <FluentTheme />
+    </Application.Styles>
+             
+    <!-- 🟦 МАППИНГ VM → VIEW (официальный паттерн Avalonia) -->
+    <Application.DataTemplates>
+        <DataTemplate DataType="vm:StoreViewModel">
+            <views:StoreView />
+        </DataTemplate>
+        <DataTemplate DataType="vm:LibraryViewModel">
+            <views:LibraryView />
+        </DataTemplate>
+        <DataTemplate DataType="vm:SettingsViewModel">
+            <views:SettingsView />
+        </DataTemplate>
+    </Application.DataTemplates>
+             
+    <!-- 🟦 СТИЛИ И РЕСУРСЫ -->
+   <Application.Resources>
+       <ResourceDictionary>
+           <!-- Ваши стили и кисти -->
+           <ResourceDictionary.MergedDictionaries>
+               <ResourceInclude Source="/Styles/GGVoltUIKit.axaml"/>
+           </ResourceDictionary.MergedDictionaries>
+           
+           <!-- Цвета -->
+           <SolidColorBrush x:Key="Volt.Cyan" Color="#00E5FF"/>
+           <SolidColorBrush x:Key="Volt.Magenta" Color="#FF007A"/>
+           <SolidColorBrush x:Key="BG.Deep" Color="#0B0C10"/>
+           <SolidColorBrush x:Key="BG.Surface" Color="#12141C"/>
+           <SolidColorBrush x:Key="BG.Hover" Color="#1A1D26"/>
+           <SolidColorBrush x:Key="Border.Weak" Color="#2A2D35"/>
+           <SolidColorBrush x:Key="Text.Primary" Color="#E8EAED"/>
+           <SolidColorBrush x:Key="Text.Secondary" Color="#9AA0A6"/>
+           <SolidColorBrush x:Key="Status.Success" Color="#00E676"/>
+           <SolidColorBrush x:Key="Status.Error" Color="#FF5252"/>
+
+           <!-- Типографика -->
+           <FontFamily x:Key="Font.Heading">/Assets/Fonts/Exo2.ttf#Exo 2</FontFamily>
+           <FontFamily x:Key="Font.Body">/Assets/Fonts/Inter.ttf#Inter</FontFamily>
+           <FontFamily x:Key="Font.Mono">/Assets/Fonts/JetBrainsMono.ttf#JetBrains Mono</FontFamily>
+
+           <!-- Отступы и скругления -->
+           <CornerRadius x:Key="Radius.Sm">4</CornerRadius>
+           <CornerRadius x:Key="Radius.Md">8</CornerRadius>
+           <Thickness x:Key="Padding.Card">16</Thickness>
+           <Thickness x:Key="Margin.Xs">4</Thickness>
+           <Thickness x:Key="Margin.Sm">8</Thickness>
+           <Thickness x:Key="Margin.Md">16</Thickness>
+       </ResourceDictionary>
+   </Application.Resources>
+</Application>

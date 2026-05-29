@@ -1,0 +1,76 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:GGVolt.Client.ViewModels"
+             x:Class="GGVolt.Client.Views.SettingsView"
+             x:DataType="vm:SettingsViewModel"
+             Padding="24">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="24" MaxWidth="800" HorizontalAlignment="Left">
+            <TextBlock Text="⚙️ Настройки" FontFamily="{StaticResource Font.Heading}" FontSize="28" FontWeight="Bold" Foreground="{StaticResource Text.Primary}"/>
+
+            <!-- Секция: Загрузки -->
+            <Border Classes="GGVoltCard">
+                <StackPanel Spacing="16">
+                    <TextBlock Text="⬇️ Загрузки и обновления" FontFamily="{StaticResource Font.Heading}" FontSize="18" Foreground="{StaticResource Text.Primary}"/>
+                    <Grid RowDefinitions="*,*,*" RowSpacing="10">
+                        <StackPanel Grid.Row="0">
+                            <TextBlock Text="Путь установки" VerticalAlignment="Center" Margin="0,0,0,12" Foreground="{StaticResource Text.Secondary}"/>
+                            <Grid Margin="0,0,0,12" ColumnDefinitions="*,Auto">
+                                <TextBox Grid.Column="0" Classes="GGVoltInput" Text="{Binding DownloadPath}" IsReadOnly="True"/>
+                                <Button Classes="GGVoltBtnSecondary" Content="Обзор..." Grid.Column="1" Margin="8,0,0,0" Width="80"/>
+                            </Grid>
+                        </StackPanel>
+                        <StackPanel Grid.Row="1">
+                            <TextBlock Text="Лимит скорости (МБ/с)" VerticalAlignment="Center" Margin="0,0,0,12" Foreground="{StaticResource Text.Secondary}"/>
+                            <NumericUpDown x:Name="SpeedUpDownSetting" Minimum="0" Value="{Binding SpeedLimit}" FormatString="Без лимита" ValueChanged="SpeedValueChanged"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="2">
+                            <TextBlock Text="Параллельные загрузки" VerticalAlignment="Center" Margin="0,0,0,12" Foreground="{StaticResource Text.Secondary}"/>
+                            <ComboBox Margin="0,0,0,12" Width="120" HorizontalAlignment="Left" 
+                                      Background="{StaticResource BG.Hover}" Foreground="{StaticResource Text.Primary}" 
+                                      BorderBrush="{StaticResource Border.Weak}" BorderThickness="1" CornerRadius="4">
+                                <ComboBoxItem Content="1"/>
+                                <ComboBoxItem Content="2"/>
+                                <ComboBoxItem Content="4"/>
+                            </ComboBox>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Секция: Интерфейс -->
+            <Border Classes="GGVoltCard">
+                <StackPanel Spacing="16">
+                    <TextBlock Text=" Интерфейс" FontFamily="{StaticResource Font.Heading}" FontSize="18" Foreground="{StaticResource Text.Primary}"/>
+                    <Grid RowDefinitions="*,*" ColumnSpacing="10">
+                        <StackPanel Grid.Row="0">
+                            <TextBlock Text="Язык интерфейса" VerticalAlignment="Center" Margin="0,0,0,12" Foreground="{StaticResource Text.Secondary}"/>
+                            <ComboBox Margin="0,0,0,12" Width="160" HorizontalAlignment="Left"
+                                      Background="{StaticResource BG.Hover}" Foreground="{StaticResource Text.Primary}"
+                                      BorderBrush="{StaticResource Border.Weak}" BorderThickness="1" CornerRadius="4">
+                                <ComboBoxItem Content="Русский"/>
+                                <ComboBoxItem Content="English"/>
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Grid.Row="1">
+                            <TextBlock Text="Сворачивать в трей" VerticalAlignment="Center" Margin="0,0,0,12" Foreground="{StaticResource Text.Secondary}"/>
+                            <CheckBox Margin="0,0,0,12" Content="Включить" Foreground="{StaticResource Text.Primary}" IsChecked="{Binding MinimizeToTray}"/>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Секция: О программе -->
+            <Border Classes="GGVoltCard">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="ℹ️ О программе" FontFamily="{StaticResource Font.Heading}" FontSize="18" Foreground="{StaticResource Text.Primary}"/>
+                    <TextBlock Text="GGVolt Client v0.1.0-alpha" FontFamily="{StaticResource Font.Mono}" Foreground="{StaticResource Text.Secondary}"/>
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <Button Classes="GGVoltBtnSecondary" Content="Проверить обновления"/>
+                        <Button Classes="GGVoltBtnSecondary" Content="Документация"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
