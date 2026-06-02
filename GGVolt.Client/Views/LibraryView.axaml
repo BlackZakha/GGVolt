@@ -1,52 +1,47 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:GGVolt.Client.ViewModels"
+             xmlns:models="clr-namespace:GGVolt.Client.Models.Api"
              x:Class="GGVolt.Client.Views.LibraryView"
              x:DataType="vm:LibraryViewModel"
              Padding="24">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Spacing="20">
-            <!-- Header & Filters -->
             <Grid ColumnDefinitions="*,Auto">
-                <StackPanel Grid.Column="0">
-                    <TextBlock Text="📚 Моя библиотека" FontFamily="{StaticResource Font.Heading}" FontSize="28" FontWeight="Bold" Foreground="{StaticResource Text.Primary}"/>
-                    <TextBlock Text="Управляйте установленными играми и программами" Foreground="{StaticResource Text.Secondary}" Margin="0,4,0,0"/>
-                </StackPanel>
-                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                    <Button Classes="GGVoltBtnPrimary" Content="Все" Padding="12,8"/>
-                    <Button Classes="GGVoltBtnSecondary" Content="Игры" Padding="12,8"/>
-                    <Button Classes="GGVoltBtnSecondary" Content="Софт" Padding="12,8"/>
-                    <Button Classes="GGVoltBtnSecondary" Content="Установлено" Padding="12,8"/>
+                <StackPanel>
+                    <TextBlock Text="📚 Моя библиотека" FontFamily="{StaticResource Font.Heading}" FontSize="28" FontWeight="Bold"/>
                 </StackPanel>
             </Grid>
 
-            <Border Height="1" Background="{StaticResource Border.Weak}"/>
+            <!-- 🟡 Загрузка (ВЫНЕСЕНА ИЗ ItemsControl!) -->
+            <StackPanel Spacing="12" IsVisible="{Binding IsLoading}" HorizontalAlignment="Center" Margin="0,40">
+                <ProgressBar Classes="GGVoltProgress" Value="0" Maximum="100" Width="300" Height="6"/>
+                <TextBlock Text="⏳ Загрузка библиотеки..." Foreground="{StaticResource Text.Secondary}" HorizontalAlignment="Center"/>
+            </StackPanel>
 
-            <!-- Library Grid -->
-            <ItemsControl ItemsSource="{Binding LibraryItems}">
+            <!-- 🔴 Ошибка -->
+            <Border Background="#2A0000" CornerRadius="8" Padding="16" IsVisible="{Binding HasError}">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="⚠️ Ошибка загрузки" Foreground="Red" FontWeight="Bold"/>
+                    <TextBlock Text="{Binding ErrorMessage}" Foreground="#FF8A8A"/>
+                    <Button Classes="GGVoltBtnSecondary" Content="Повторить" Command="{Binding LoadLibraryCommand}" Width="120"/>
+                </StackPanel>
+            </Border>
+
+            <!-- ✅ Список -->
+            <ItemsControl ItemsSource="{Binding Items}" IsVisible="{Binding IsLoading, Converter={x:Static BoolConverters.Not}}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <WrapPanel HorizontalAlignment="Stretch" VerticalAlignment="Top" />
+                        <WrapPanel HorizontalAlignment="Stretch" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
-                    <DataTemplate>
+                    <DataTemplate x:DataType="models:LibraryItemDto">
                         <Border Classes="GGVoltCard" Width="240" Margin="0,0,16,16">
                             <StackPanel Spacing="10">
-                                <Border Height="130" Background="{StaticResource BG.Hover}" CornerRadius="6">
-                                    <TextBlock Text="🎮/💻" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="40" Opacity="0.3"/>
-                                </Border>
-                                <StackPanel>
-                                    <TextBlock Text="{Binding Title}" Foreground="{StaticResource Text.Primary}" FontFamily="{StaticResource Font.Heading}" FontSize="16" TextWrapping="Wrap"/>
-                                    <TextBlock Text="{Binding Version}" Foreground="{StaticResource Text.Secondary}" FontSize="12"/>
-                                </StackPanel>
-                                
-                                <!-- Status & Progress -->
-                                <StackPanel Spacing="4">
-                                    <ProgressBar Classes="GGVoltProgress" Value="{Binding Progress}" Maximum="100" Height="4" IsVisible="{Binding IsUpdating}"/>
-                                    <TextBlock Text="{Binding StatusText}" Foreground="{StaticResource Volt.Cyan}" FontSize="11" FontFamily="{StaticResource Font.Mono}" HorizontalAlignment="Right"/>
-                                </StackPanel>
-
+                                <Border Height="130" Background="{StaticResource BG.Hover}" CornerRadius="6"/>
+                                <TextBlock Text="{Binding Title}" Foreground="{StaticResource Text.Primary}" FontFamily="{StaticResource Font.Heading}" FontSize="16"/>
+                                <TextBlock Text="{Binding Version}" Foreground="{StaticResource Text.Secondary}" FontSize="12"/>
                                 <Button Classes="GGVoltBtnSecondary" Content="{Binding ActionText}" HorizontalAlignment="Stretch"/>
                             </StackPanel>
                         </Border>

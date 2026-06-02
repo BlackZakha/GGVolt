@@ -12,10 +12,6 @@
         ExtendClientAreaToDecorationsHint="True"
         Background="#770B0C10">
 
-    <Window.DataContext>
-        <vm:MainWindowViewModel/>
-    </Window.DataContext>
-
     <Grid ColumnDefinitions="240,*">
         <!-- 🟦 SIDEBAR -->
         <Border Grid.Column="0" Background="{StaticResource BG.Surface}" 

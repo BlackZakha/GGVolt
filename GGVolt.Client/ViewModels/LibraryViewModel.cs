@@ -1,23 +1,48 @@
+using System;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using GGVolt.Client.Models.Api;
+using GGVolt.Client.Services;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace GGVolt.Client.ViewModels;
+
 public partial class LibraryViewModel : ViewModelBase
 {
-    public ObservableCollection<LibraryItem> LibraryItems { get; } = new()
-    {
-        new() { Title = "CyberCore", Version = "v2.4.1", StatusText = "Готово", Progress = 100, ActionText = "Запустить" },
-        new() { Title = "VoltSync", Version = "v1.0.0", StatusText = "Обновление...", IsUpdating = true, Progress = 45, ActionText = "Остановить" },
-        new() { Title = "PixelForge", Version = "v0.9.2", StatusText = "Установлено", Progress = 100, ActionText = "Запустить" }
-    };
-}
+    private readonly IApiService _api;
+    private readonly CancellationTokenSource _cts = new();
 
-public class LibraryItem
-{
-    public string Title { get; set; } = "";
-    public string Version { get; set; } = "";
-    public string StatusText { get; set; } = "";
-    public double Progress { get; set; }
-    public bool IsUpdating { get; set; }
-    public string ActionText { get; set; } = "Запустить";
+    [ObservableProperty] private bool _isLoading = true;
+    [ObservableProperty] private string _errorMessage = string.Empty;
+    [ObservableProperty] private ObservableCollection<LibraryItemDto> _items = new();
+
+    public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
+
+    public LibraryViewModel(IApiService api)
+    {
+        _api = api;
+        _ = LoadLibraryAsync();
+    }
+
+    [RelayCommand]
+    private async Task LoadLibraryAsync()
+    {
+        IsLoading = true; ErrorMessage = string.Empty;
+        try
+        {
+            var dtos = await _api.GetLibraryAsync(_cts.Token);
+            Items = new ObservableCollection<LibraryItemDto>(dtos.Select(d => new LibraryItemDto
+            {
+                Title = d.Title, Version = d.Version, StatusText = d.StatusText,
+                Progress = d.Progress, ActionText = d.ActionText
+            }));
+        }
+        catch (Exception ex) { ErrorMessage = $"Ошибка библиотеки: {ex.Message}"; }
+        finally { IsLoading = false; }
+    }
+
+    public void Dispose() => _cts.Cancel();
 }

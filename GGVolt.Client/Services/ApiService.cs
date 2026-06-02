@@ -21,9 +21,9 @@ public class ApiService : IApiService
         return items ?? Enumerable.Empty<CatalogItemDto>();
     }
 
-    // public async Task<IEnumerable<LibraryItemDto>> GetLibraryAsync(CancellationToken ct = default)
-    // {
-    //     var items = await _http.GetFromJsonAsync<List<LibraryItemDto>>("/library", ct);
-    //     return items ?? Enumerable.Empty<LibraryItemDto>();
-    // }
+    public async Task<IEnumerable<LibraryItemDto>> GetLibraryAsync(CancellationToken ct = default)
+    {
+        var items = await _http.GetFromJsonAsync<List<LibraryItemDto>>("/library", ct);
+        return items ?? Enumerable.Empty<LibraryItemDto>();
+    }
 }

@@ -6,9 +6,10 @@ namespace GGVolt.Client.Views;
 
 public partial class MainWindow : Window
 {
-    public MainWindow()
+    public MainWindow(MainWindowViewModel vm) // DI инжект
     {
         InitializeComponent();
+        DataContext = vm;
     }
 
     private void CloseClickButton(object? sender, RoutedEventArgs e)

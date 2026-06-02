@@ -8,5 +8,5 @@ namespace GGVolt.Client.Services;
 public interface IApiService
 {
     Task<IEnumerable<CatalogItemDto>> GetCatalogAsync(CancellationToken ct = default);
-    // Task<IEnumerable<LibraryItemDto>> GetLibraryAsync(CancellationToken ct = default);
+    Task<IEnumerable<LibraryItemDto>> GetLibraryAsync(CancellationToken ct = default);
 }

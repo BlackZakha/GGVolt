@@ -51,7 +51,7 @@
            <!-- Типографика -->
            <FontFamily x:Key="Font.Heading">/Assets/Fonts/Exo2.ttf#Exo 2</FontFamily>
            <FontFamily x:Key="Font.Body">/Assets/Fonts/Inter.ttf#Inter</FontFamily>
-           <FontFamily x:Key="Font.Mono">/Assets/Fonts/JetBrainsMono.ttf#JetBrains Mono</FontFamily>
+           <FontFamily x:Key="Font.Mono">/Assets/Fonts/JetBrainsMono.ttf#JetBrainsMono Nerd Font</FontFamily>
 
            <!-- Отступы и скругления -->
            <CornerRadius x:Key="Radius.Sm">4</CornerRadius>
