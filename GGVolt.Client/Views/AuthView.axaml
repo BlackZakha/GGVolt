@@ -1,0 +1,30 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:GGVolt.Client.ViewModels"
+             x:Class="GGVolt.Client.Views.AuthView"
+             x:DataType="vm:AuthViewModel"
+             HorizontalAlignment="Center" 
+             VerticalAlignment="Center" 
+             Width="400">
+    <Border Classes="GGVoltCard" Padding="32" CornerRadius="12">
+        <StackPanel Spacing="20">
+            <TextBlock Text="GG⚡Volt" FontFamily="{StaticResource Font.Heading}" FontSize="32" FontWeight="Bold" 
+                       Foreground="{StaticResource Volt.Cyan}" HorizontalAlignment="Center"/>
+            <TextBlock Text="{Binding PageTitle}" Foreground="{StaticResource Text.Primary}" FontSize="18" HorizontalAlignment="Center"/>
+
+            <TextBox Classes="GGVoltInput" Text="{Binding Nickname}" Watermark="Никнейм"/>
+            <TextBox Classes="GGVoltInput" IsVisible="{Binding IsVisibleField}" Text="{Binding Email}" Watermark="Email"/>
+            <TextBox Classes="GGVoltInput" Text="{Binding Password}" Watermark="Пароль" PasswordChar="•"/>
+            <TextBox Classes="GGVoltInput" IsVisible="{Binding IsVisibleField}" Text="{Binding Conpassword}" Watermark="Подтверждение пароля" PasswordChar="•"/>
+
+            <TextBlock Text="{Binding ErrorMessage}" Foreground="{StaticResource Status.Error}" 
+                       TextWrapping="Wrap" IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+
+            <Button Classes="GGVoltBtnPrimary" Content="{Binding SubmitText}" 
+                    Command="{Binding SubmitCommand}" IsEnabled="{Binding IsNotLoading}"/>
+            
+            <Button Classes="GGVoltBtnSecondary" Content="{Binding ToggleText}" 
+                    Command="{Binding ToggleModeCommand}" HorizontalAlignment="Center" BorderThickness="0"/>
+        </StackPanel>
+    </Border>
+</UserControl>

@@ -19,7 +19,8 @@ public partial class MainWindow : Window
 
     private void MaximizeClickButton(object? sender, RoutedEventArgs e)
     {
-        this.WindowState = WindowState.Maximized;
+        if (WindowState == WindowState.Maximized) WindowState = WindowState.Normal;
+        else WindowState = WindowState.Maximized;
     }
 
     private void MinimizeClickButton(object? sender, RoutedEventArgs e)

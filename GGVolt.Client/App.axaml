@@ -17,21 +17,16 @@
              
     <!-- 🟦 МАППИНГ VM → VIEW (официальный паттерн Avalonia) -->
     <Application.DataTemplates>
-        <DataTemplate DataType="vm:StoreViewModel">
-            <views:StoreView />
-        </DataTemplate>
-        <DataTemplate DataType="vm:LibraryViewModel">
-            <views:LibraryView />
-        </DataTemplate>
-        <DataTemplate DataType="vm:SettingsViewModel">
-            <views:SettingsView />
-        </DataTemplate>
+        <DataTemplate DataType="vm:StoreViewModel"><views:StoreView /></DataTemplate>
+        <DataTemplate DataType="vm:LibraryViewModel"><views:LibraryView /></DataTemplate>
+        <DataTemplate DataType="vm:SettingsViewModel"><views:SettingsView /></DataTemplate>
+        <DataTemplate DataType="vm:AuthViewModel"><views:AuthView /></DataTemplate>
     </Application.DataTemplates>
              
     <!-- 🟦 СТИЛИ И РЕСУРСЫ -->
    <Application.Resources>
        <ResourceDictionary>
-           <!-- Ваши стили и кисти -->
+           <!-- Cтили и кисти -->
            <ResourceDictionary.MergedDictionaries>
                <ResourceInclude Source="/Styles/GGVoltUIKit.axaml"/>
            </ResourceDictionary.MergedDictionaries>

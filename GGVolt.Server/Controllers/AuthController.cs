@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 using GGVolt.Core.Entities;
 using GGVolt.Core.Constants;
 using GGVolt.Infrastructure.Repositories;
@@ -55,11 +54,11 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Login([FromBody] LoginRequest req, CancellationToken ct)
     {
         var user = await _userRepo.GetQueryable()
-            .FirstOrDefaultAsync(u => u.Email == req.Email.ToLowerInvariant(), ct);
+            .FirstOrDefaultAsync(u => u.Username == req.Username.ToLowerInvariant(), ct);
 
         if (user == null || !BCrypt.Net.BCrypt.Verify(req.Password, user.PasswordHash))
         {
-            _logger.LogWarning("Попытка входа с неверными данными: {Email}", req.Email);
+            _logger.LogWarning("Попытка входа с неверными данными: {Username}", req.Username);
             return Unauthorized(new { error = "Неверный email или пароль" });
         }
 

@@ -17,13 +17,13 @@ public class ApiService : IApiService
     public async Task<IEnumerable<CatalogItemDto>> GetCatalogAsync(CancellationToken ct = default)
     {
         // Ожидает JSON: [{ "id":1, "title":"...", ... }]
-        var items = await _http.GetFromJsonAsync<List<CatalogItemDto>>("/catalog", ct);
+        var items = await _http.GetFromJsonAsync<List<CatalogItemDto>>("/api/v1/games", ct);
         return items ?? Enumerable.Empty<CatalogItemDto>();
     }
 
     public async Task<IEnumerable<LibraryItemDto>> GetLibraryAsync(CancellationToken ct = default)
     {
-        var items = await _http.GetFromJsonAsync<List<LibraryItemDto>>("/library", ct);
+        var items = await _http.GetFromJsonAsync<List<LibraryItemDto>>("/api/v1/library", ct);
         return items ?? Enumerable.Empty<LibraryItemDto>();
     }
 }

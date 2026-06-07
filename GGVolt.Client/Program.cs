@@ -10,27 +10,39 @@ using GGVolt.Client.Views;
 internal static class Program
 {
     [STAThread]
-    public static void Main(string[] args) =>
+    public static void Main(string[] args) // ✅ void, а не int
+    {
         BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+    }
 
     public static AppBuilder BuildAvaloniaApp()
     {
-        // 1. Настройка DI
+        // 1. Настройка хоста и DI
         var host = Host.CreateDefaultBuilder()
             .ConfigureServices(services =>
             {
-                // HTTP-клиент (укажите реальный URL бэкенда)
-                services.AddHttpClient<IApiService, ApiService>(c =>
+                services.AddSingleton<ITokenAccessor, TokenSession>();
+                services.AddSingleton<ITokenStorage, TokenStorage>();
+                services.AddTransient<AuthMessageHandler>();
+                
+                // Единый HTTP-клиент для всех сервисов
+                services.AddHttpClient("GGVoltApi", c =>
                 {
                     c.BaseAddress = new Uri("http://localhost:5000/api/v1/");
                     c.DefaultRequestHeaders.Add("Accept", "application/json");
-                });
+                })
+                .AddHttpMessageHandler<AuthMessageHandler>();
 
+                // Регистрация сервисов
+                services.AddHttpClient<IApiService, ApiService>("GGVoltApi");
+                services.AddHttpClient<IAuthService, AuthService>("GGVoltApi");
+                
                 // ViewModels
                 services.AddTransient<MainWindowViewModel>();
                 services.AddTransient<StoreViewModel>();
                 services.AddTransient<LibraryViewModel>();
                 services.AddTransient<SettingsViewModel>();
+                services.AddTransient<AuthViewModel>();
 
                 // App & MainWindow
                 services.AddSingleton<App>();
@@ -38,8 +50,9 @@ internal static class Program
             })
             .Build();
 
-        // 2. Инициализация
+        // 2. Инициализация приложения
         App.InitializeServices(host.Services);
+        
         return AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .WithInterFont()
