@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   version="1.1"
+   id="svg1"
+   width="1024"
+   height="1024"
+   viewBox="0 0 1024 1024"
+   sodipodi:docname="logo.svg"
+   inkscape:version="1.4.4 (dcaf3e7d9e, 2026-05-05)"
+   inkscape:export-batch-name="logo"
+   inkscape:export-batch-path="/slocal/Create/GGVolt/Images"
+   inkscape:export-filename="logo.svg"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1">
+    <linearGradient
+       id="linearGradient2"
+       inkscape:collect="always">
+      <stop
+         style="stop-color:#0000fd;stop-opacity:1;"
+         offset="0"
+         id="stop2" />
+      <stop
+         style="stop-color:#45daff;stop-opacity:1;"
+         offset="1"
+         id="stop3" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient2"
+       id="linearGradient3"
+       x1="625.87854"
+       y1="510.70499"
+       x2="395.95099"
+       y2="510.70496"
+       gradientUnits="userSpaceOnUse"
+       spreadMethod="reflect" />
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter12"
+       x="-0.053500899"
+       y="-0.056652071"
+       width="1.1075794"
+       height="1.1137427">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="1.6320663"
+         id="feGaussianBlur12" />
+    </filter>
+  </defs>
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#505050"
+     inkscape:zoom="1"
+     inkscape:cx="491"
+     inkscape:cy="503"
+     inkscape:window-width="1892"
+     inkscape:window-height="1008"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg1">
+    <inkscape:page
+       x="0"
+       y="0"
+       width="1024"
+       height="1024"
+       id="page2"
+       margin="0"
+       bleed="0" />
+  </sodipodi:namedview>
+  <g
+     inkscape:groupmode="layer"
+     inkscape:label="Image"
+     id="g1"
+     transform="translate(0.0359199)">
+    <path
+       style="fill:#ffffff;fill-opacity:1;stroke:#2965ce;stroke-opacity:1"
+       d="m 730.57566,489.85858 135.49943,0.87372 -0.50967,152.17292 -25.48351,25.48351 -215.95449,-0.29124 -25.92037,-25.48351 0.87372,-263.13538 25.62913,-25.92036 214.78953,-0.29124 25.92037,27.95904 0.29124,56.50057 -75.28556,0.14562 v -13.25142 l -9.61092,-10.63026 -93.19681,-0.43686 -12.96018,11.21274 -1.01934,171.686 13.54266,13.10581 87.22639,0.7281 15.2901,-11.21275 0.7281,-35.82252 -12.81456,-11.50398 -36.55062,-0.87372 -10.63026,-0.58248 z"
+       id="path2" />
+    <use
+       x="0"
+       y="0"
+       xlink:href="#path2"
+       id="use9"
+       transform="translate(-440.35495)" />
+  </g>
+  <path
+     style="opacity:1;mix-blend-mode:normal;fill:url(#linearGradient3);fill-opacity:1;fill-rule:nonzero;stroke:#0091fa;stroke-width:9.6;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter12)"
+     d="m 586.77588,221.48806 -189.96132,329.31968 92.17748,0.36405 -59.50873,248.74215 195.51783,-325.19267 -92.3231,-1.16496 z"
+     id="path1" />
+  <path
+     style="opacity:1;fill:#0024f9;fill-opacity:0;fill-rule:nonzero;stroke:#0091fa;stroke-width:7.5;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+     d="m 597.87109,192.64453 -209.32696,362.93148 94.36561,0.37565 -65.3199,273.06787 215.83203,-358.99219 -94.8125,-1.19922 z"
+     id="path12" />
+</svg>

@@ -51,16 +51,15 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     [ProducesResponseType(200, Type = typeof(AuthResponse))]
     [ProducesResponseType(401)]
-    public async Task<IActionResult> Login([FromBody] LoginRequest req, CancellationToken ct)
+    public async Task<IActionResult> Login([FromBody] LoginRequest req)
     {
+        // 🔁 Ищем пользователя по Username (сравнение без учёта регистра)
         var user = await _userRepo.GetQueryable()
-            .FirstOrDefaultAsync(u => u.Username == req.Username.ToLowerInvariant(), ct);
-
+            .FirstOrDefaultAsync(u => 
+                EF.Functions.ILike(u.Username, req.Username)); // PostgreSQL: case-insensitive
+    
         if (user == null || !BCrypt.Net.BCrypt.Verify(req.Password, user.PasswordHash))
-        {
-            _logger.LogWarning("Попытка входа с неверными данными: {Username}", req.Username);
-            return Unauthorized(new { error = "Неверный email или пароль" });
-        }
+            return Unauthorized(new { error = "Неверный логин или пароль" });
 
         var token = _jwt.GenerateToken(user);
         return Ok(new AuthResponse(token, "", 60));

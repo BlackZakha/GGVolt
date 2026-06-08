@@ -23,12 +23,13 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly IAuthService _auth;
 
     [ObservableProperty] private bool _isAuthenticated;
-    public bool IsNotAuthenticated => !_isAuthenticated;
+    [ObservableProperty] private bool _isNotAuthenticated;
 
     public MainWindowViewModel(IApiService api, IAuthService auth)
     {
         _auth = auth;
         IsAuthenticated = auth.IsAuthenticated;
+        IsNotAuthenticated = !_isAuthenticated;
 
         AuthPage = new AuthViewModel(auth);
         // ✅ Исправленная сигнатура EventHandler
@@ -39,7 +40,11 @@ public partial class MainWindowViewModel : ViewModelBase
         CurrentPage = StorePage;
     }
 
-    private void OnAuthCompleted(object? sender, EventArgs e) => IsAuthenticated = true;
+    private void OnAuthCompleted(object? sender, EventArgs e)
+    {
+        IsAuthenticated = true;
+        IsNotAuthenticated = false;
+    }
 
     [RelayCommand]
     private async Task LogoutAsync()
@@ -47,6 +52,7 @@ public partial class MainWindowViewModel : ViewModelBase
         await _auth.LogoutAsync();
         AuthPage.NotifyLogout();
         IsAuthenticated = false;
+        IsNotAuthenticated = true;
     }
 
     [RelayCommand] private void NavigateToStore() => CurrentPage = StorePage;
