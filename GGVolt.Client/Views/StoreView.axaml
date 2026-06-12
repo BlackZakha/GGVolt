@@ -1,73 +1,82 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:GGVolt.Client.ViewModels"
-             xmlns:models="using:GGVolt.Client.Models"
+             xmlns:api="using:GGVolt.Client.Models.Api"
              x:Class="GGVolt.Client.Views.StoreView"
              x:DataType="vm:StoreViewModel"
+             x:Name="Root"
+             x:CompileBindings="False"
              Padding="24">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Spacing="20">
-        
-            <!-- 🟡 Загрузка -->
-            <StackPanel Spacing="12" IsVisible="{Binding IsLoading}" HorizontalAlignment="Center" Margin="0,40">
-                <ProgressBar Classes="GGVoltProgress" Value="0" Maximum="100" Width="300" Height="6"/>
-                <TextBlock Text="⏳ Загрузка каталога..." Foreground="{StaticResource Text.Secondary}" HorizontalAlignment="Center"/>
-            </StackPanel>
+        <Panel Margin="20">
+            <StackPanel Spacing="10" VerticalAlignment="Top">
+                <TextBlock Text=" Магазин" FontFamily="{StaticResource Font.Heading}" FontSize="28" FontWeight="Bold"/>
 
-            <!-- 🔴 Ошибка -->
-            <Border Background="#2A0000" CornerRadius="8" Padding="16" IsVisible="{Binding HasError}">
-                <StackPanel Spacing="8">
-                    <TextBlock Text="⚠️ Произошла ошибка" Foreground="Red" FontWeight="Bold"/>
-                    <TextBlock Text="{Binding ErrorMessage}" Foreground="#FF8A8A" TextWrapping="Wrap"/>
-                    <Button Classes="GGVoltBtnSecondary" Content="Повторить" Command="{Binding LoadCatalogCommand}" Width="120"/>
+                <!-- Фильтры -->
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <Button Classes="GGVoltBtnPrimary" Content="Все" Command="{Binding LoadCatalogCommand}"/>
+                    <Button Classes="GGVoltBtnSecondary" Content="Игры"/>
+                    <Button Classes="GGVoltBtnSecondary" Content="Софт"/>
                 </StackPanel>
-            </Border>
 
-            <!-- ✅ Контент (ваш существующий код) -->
-            <StackPanel Spacing="28" IsVisible="{Binding IsLoading, Converter={x:Static BoolConverters.Not}}">
-                <!-- HERO -->
-                <Border Height="220" Background="{StaticResource BG.Hover}" CornerRadius="{StaticResource Radius.Md}" Padding="28"
-                        BorderBrush="{StaticResource Border.Weak}" BorderThickness="1">
-                    <StackPanel VerticalAlignment="Center" Spacing="10">
-                        <TextBlock Text="🔥 РЕКОМЕНДУЕМОЕ" Foreground="{StaticResource Text.Secondary}" FontSize="13" FontFamily="{StaticResource Font.Mono}"/>
-                        <TextBlock Text="CyberCore: System Overload" Foreground="{StaticResource Text.Primary}" 
-                                   FontFamily="{StaticResource Font.Heading}" FontSize="36" FontWeight="Bold"/>
-                        <TextBlock Text="Мощный системный утилит с продвинутым мониторингом и игровым режимом" 
-                                   Foreground="{StaticResource Text.Secondary}" FontSize="15" Margin="0,4,0,12"/>
-                        <StackPanel Orientation="Horizontal" Spacing="12">
-                            <Button Classes="GGVoltBtnPrimary" Content="Скачать бесплатно" Width="180"/>
-                            <Button Classes="GGVoltBtnSecondary" Content="Подробнее"/>
-                        </StackPanel>
+                <!-- Загрузка -->
+                <StackPanel Spacing="12" IsVisible="{Binding IsLoading}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,40">
+                    <ProgressBar Classes="GGVoltProgress" Value="0" Maximum="100" Width="300" Height="6"/>
+                    <TextBlock Text="Загрузка каталога..." Foreground="{StaticResource Text.Secondary}"/>
+                </StackPanel>
+
+                <!-- Ошибка -->
+                <Border Background="#2A0000" CornerRadius="8" Padding="16" IsVisible="{Binding HasError}">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Ошибка" Foreground="Red" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding ErrorMessage}" Foreground="#FF8A8A" TextWrapping="Wrap"/>
+                        <Button Classes="GGVoltBtnSecondary" Content="Повторить" Command="{Binding LoadCatalogCommand}" Width="120"/>
                     </StackPanel>
                 </Border>
 
-                <!-- СПИСОК -->
-                <TextBlock Text="Популярное сегодня" Foreground="{StaticResource Text.Primary}" 
-                           FontFamily="{StaticResource Font.Heading}" FontSize="24" FontWeight="SemiBold"/>
-                
-                <ItemsControl ItemsSource="{Binding Items}" HorizontalAlignment="Stretch">
+                <!-- Сетка игр -->
+                <ItemsControl ItemsSource="{Binding Items}" IsVisible="{Binding HasItems}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <WrapPanel HorizontalAlignment="Stretch" VerticalAlignment="Top" />
+                            <WrapPanel HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
-                        <DataTemplate x:DataType="models:CatalogItem">
-                            <Border Classes="GGVoltCard" Width="230" Height="260" Margin="0,0,16,16">
+                        <DataTemplate>
+                            <Border Classes="GGVoltCard" Width="260" Margin="0,0,16,16">
                                 <StackPanel Spacing="10">
-                                    <Border Height="130" Background="{StaticResource BG.Hover}" CornerRadius="6"/>
+                                    <Border Height="150" Background="{StaticResource BG.Hover}" CornerRadius="6" ClipToBounds="True">
+                                        <Image Source="{Binding CoverUrl}" Stretch="UniformToFill"/>
+                                    </Border>
+                                    
                                     <TextBlock Text="{Binding Title}" Foreground="{StaticResource Text.Primary}" 
-                                               FontFamily="{StaticResource Font.Heading}" FontSize="16"/>
-                                    <TextBlock Text="{Binding Subtitle}" Foreground="{StaticResource Text.Secondary}" FontSize="12"/>
-                                    <ProgressBar Classes="GGVoltProgress" Value="{Binding Progress}" Maximum="100" Height="4"
-                                                 IsVisible="{Binding IsDownloading}"/>
-                                    <Button Classes="GGVoltBtnSecondary" Content="{Binding ActionText}" HorizontalAlignment="Stretch"/>
+                                               FontFamily="{StaticResource Font.Heading}" FontSize="16" TextWrapping="Wrap"/>
+                                    
+                                    <TextBlock Text="{Binding Description}" Foreground="{StaticResource Text.Secondary}" 
+                                               FontSize="12" TextWrapping="Wrap" MaxHeight="40" TextTrimming="CharacterEllipsis"/>
+                                    
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <TextBlock Text="{Binding Price, StringFormat='{}{0} ₽'}" 
+                                                   Foreground="{StaticResource Volt.Cyan}" FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding Type}" Foreground="{StaticResource Text.Secondary}" FontSize="11"/>
+                                    </StackPanel>
+                                    
+                                    <Button Classes="GGVoltBtnPrimary" Content="Подробнее" HorizontalAlignment="Stretch"
+                                            Command="{Binding DataContext.OpenGameDetailCommand, ElementName=Root}"
+                                            CommandParameter="{Binding}"/>
                                 </StackPanel>
                             </Border>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </StackPanel>
-        </StackPanel>
+
+            <!-- Пагинация -->
+            <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,20">
+                <Button Classes="GGVoltBtnSecondary" Content="← Назад" Command="{Binding PrevPageCommand}"/>
+                <TextBlock Text="{Binding CurrentPage, StringFormat='Страница {0}'}" VerticalAlignment="Center"/>
+                <Button Classes="GGVoltBtnSecondary" Content="Вперёд →" Command="{Binding NextPageCommand}"/>
+            </StackPanel>
+        </Panel>
     </ScrollViewer>
 </UserControl>

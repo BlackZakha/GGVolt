@@ -101,5 +101,13 @@
     <Style x:Key="GGVoltInputFocus" Selector="TextBox.GGVoltInput:focus">
         <Setter Property="BorderBrush" Value="{StaticResource Volt.Cyan}"/>
     </Style>
+    
+    <!-- Прогресс бар -->
+    <Style x:Key="GGVoltProgress" Selector="ProgressBar.GGVoltProgress">
+        <Setter Property="Foreground" Value="{StaticResource Volt.Cyan}"/>
+        <Setter Property="Background" Value="{StaticResource BG.Deep}"/>
+        <Setter Property="Padding" Value="0 ,5"/>
+        <Setter Property="CornerRadius" Value="10"/>
+    </Style>
 
 </ResourceDictionary>

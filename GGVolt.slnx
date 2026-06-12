@@ -6,4 +6,5 @@
   <Project Path="GGVolt.Core/GGVolt.Core.csproj" />
   <Project Path="GGVolt.Infrastructure/GGVolt.Infrastructure.csproj" />
   <Project Path="GGVolt.Server/GGVolt.Server.csproj" />
+  <Project Path="GGVolt.Web/GGVolt.Web.csproj" />
 </Solution>

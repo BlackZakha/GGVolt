@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using GGVolt.Client.ViewModels;
 
@@ -26,5 +27,10 @@ public partial class MainWindow : Window
     private void MinimizeClickButton(object? sender, RoutedEventArgs e)
     {
         this.WindowState = WindowState.Minimized;
+    }
+
+    private void MoveWindowPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        BeginMoveDrag(e);
     }
 }

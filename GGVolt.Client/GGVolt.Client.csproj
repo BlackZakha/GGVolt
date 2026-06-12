@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <AvaloniaXaml Include="Styles\GGVoltUIKit.axaml" />
+    <!-- <AvaloniaXaml Include="Styles\GGVoltUIKit.axaml" /> -->
     <Folder Include="Assets\Fonts\" />
     <AvaloniaResource Include="Assets\**" />
   </ItemGroup>

@@ -1,10 +1,9 @@
 using System;
 using System.IO;
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using GGVolt.Client.Models.Api;
+using Microsoft.Extensions.Logging;
 
 namespace GGVolt.Client.Services;
 
@@ -12,80 +11,150 @@ public class TokenStorage : ITokenStorage
 {
     private readonly string _filePath;
     private readonly ITokenAccessor _session;
-    
-    private static readonly byte[] _key = Convert.FromBase64String("xVz8K2mN9pQ4rS7tU1vW3xY5zA6bC8dE0fG2hI4jK6M=");
+    private readonly ILogger<TokenStorage>? _logger;
 
-    public TokenStorage(ITokenAccessor session)
+    public TokenStorage(ITokenAccessor session, ILogger<TokenStorage>? logger = null)
     {
         _session = session;
+        _logger = logger;
+        
         var dir = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), 
             "GGVolt");
         Directory.CreateDirectory(dir);
         _filePath = Path.Combine(dir, "auth.dat");
+        
+        _logger?.LogInformation("📁 TokenStorage инициализирован: {Path}", _filePath);
+        
+        // ✅ СИНХРОННАЯ загрузка токена при создании
+        LoadTokenSynchronously();
+    }
+
+    private void LoadTokenSynchronously()
+    {
+        try
+        {
+            if (!File.Exists(_filePath))
+            {
+                _logger?.LogInformation("⚠️ Файл токена не найден при старте");
+                return;
+            }
+
+            _logger?.LogInformation("📖 Синхронная загрузка токена из {Path}", _filePath);
+            var json = File.ReadAllText(_filePath);
+            var tokens = JsonSerializer.Deserialize<AuthResponse>(json);
+            
+            if (tokens != null && !string.IsNullOrEmpty(tokens.AccessToken))
+            {
+                _session.SetToken(tokens.AccessToken);
+                _logger?.LogInformation("✅ Токен загружен при старте: {Token}..., IsAuthenticated={Auth}", 
+                    tokens.AccessToken.Substring(0, Math.Min(20, tokens.AccessToken.Length)),
+                    _session.IsAuthenticated);
+            }
+            else
+            {
+                _logger?.LogWarning("⚠️ Токен пустой или невалидный при старте");
+                File.Delete(_filePath);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "❌ Ошибка при синхронной загрузке токена");
+            if (File.Exists(_filePath))
+            {
+                File.Delete(_filePath);
+                _logger?.LogInformation("🗑️ Повреждённый файл удалён");
+            }
+        }
     }
 
     public async Task SaveAsync(AuthResponse tokens)
     {
-        var json = JsonSerializer.Serialize(tokens);
-        var encrypted = Protect(Encoding.UTF8.GetBytes(json));
-        await File.WriteAllBytesAsync(_filePath, encrypted);
-        
-        // ✅ Синхронизируем сессию
-        _session.SetToken(tokens.AccessToken);
+        try
+        {
+            if (tokens == null || string.IsNullOrEmpty(tokens.AccessToken))
+            {
+                _logger?.LogWarning("⚠️ Попытка сохранить пустой токен!");
+                return;
+            }
+
+            _logger?.LogInformation("💾 Сохранение токена...");
+            
+            var json = JsonSerializer.Serialize(tokens);
+            await File.WriteAllTextAsync(_filePath, json);
+            
+            _session.SetToken(tokens.AccessToken);
+            
+            _logger?.LogInformation("✅ Токен сохранен: {Token}...", 
+                tokens.AccessToken.Substring(0, Math.Min(20, tokens.AccessToken.Length)));
+            _logger?.LogInformation("✅ IsAuthenticated={Auth}", _session.IsAuthenticated);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "❌ Ошибка при сохранении токена");
+            throw;
+        }
     }
 
     public async Task<AuthResponse?> LoadAsync()
     {
-        if (!File.Exists(_filePath)) return null;
         try
         {
-            var encrypted = await File.ReadAllBytesAsync(_filePath);
-            var decrypted = Unprotect(encrypted);
-            var tokens = JsonSerializer.Deserialize<AuthResponse>(decrypted);
+            if (!File.Exists(_filePath))
+            {
+                _logger?.LogWarning("⚠️ Файл токена не найден");
+                return null;
+            }
+
+            _logger?.LogInformation("📖 Загрузка токена из {Path}", _filePath);
+            var json = await File.ReadAllTextAsync(_filePath);
+            var tokens = JsonSerializer.Deserialize<AuthResponse>(json);
             
-            // ✅ Автоматически обновляем сессию при загрузке
-            if (tokens != null)
+            if (tokens != null && !string.IsNullOrEmpty(tokens.AccessToken))
             {
                 _session.SetToken(tokens.AccessToken);
+                _logger?.LogInformation("✅ Токен загружен: {Token}..., IsAuthenticated={Auth}", 
+                    tokens.AccessToken.Substring(0, Math.Min(20, tokens.AccessToken.Length)),
+                    _session.IsAuthenticated);
+            }
+            else
+            {
+                _logger?.LogWarning("⚠️ Токен пустой или невалидный");
+                File.Delete(_filePath);
             }
             
             return tokens;
         }
-        catch 
-        { 
-            return null; 
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "❌ Ошибка при загрузке токена");
+            if (File.Exists(_filePath))
+            {
+                File.Delete(_filePath);
+                _logger?.LogInformation("🗑️ Повреждённый файл удалён");
+            }
+            return null;
         }
     }
 
     public Task ClearAsync()
     {
-        if (File.Exists(_filePath)) File.Delete(_filePath);
-        
-        // ✅ Очищаем сессию
-        _session.SetToken(null);
+        try
+        {
+            _logger?.LogInformation("🗑️ Очистка токена");
+            if (File.Exists(_filePath))
+            {
+                File.Delete(_filePath);
+                _logger?.LogInformation("✅ Файл удален");
+            }
+            
+            _session.SetToken(null);
+            _logger?.LogInformation("✅ Сессия очищена, IsAuthenticated={Auth}", _session.IsAuthenticated);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "❌ Ошибка при очистке токена");
+        }
         return Task.CompletedTask;
-    }
-
-    private byte[] Protect(byte[] data)
-    {
-        using var aes = Aes.Create();
-        aes.Key = _key;
-        aes.GenerateIV();
-        using var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
-        using var ms = new MemoryStream();
-        ms.Write(aes.IV, 0, aes.IV.Length);
-        ms.Write(encryptor.TransformFinalBlock(data, 0, data.Length), 0, data.Length);
-        return ms.ToArray();
-    }
-
-    private byte[] Unprotect(byte[] data)
-    {
-        if (data.Length < 16) throw new CryptographicException("Invalid data");
-        using var aes = Aes.Create();
-        aes.Key = _key;
-        aes.IV = data[..16];
-        using var decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
-        return decryptor.TransformFinalBlock(data, 16, data.Length - 16);
     }
 }

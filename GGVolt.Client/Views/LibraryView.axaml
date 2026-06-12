@@ -1,48 +1,78 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:GGVolt.Client.ViewModels"
-             xmlns:models="clr-namespace:GGVolt.Client.Models.Api"
+             xmlns:api="using:GGVolt.Client.Models.Api"
+             xmlns:dl="using:GGVolt.Client.Models.Download"
              x:Class="GGVolt.Client.Views.LibraryView"
+             x:Name="Root"
              x:DataType="vm:LibraryViewModel"
+             x:CompileBindings="False"
              Padding="24">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Spacing="20">
-            <Grid ColumnDefinitions="*,Auto">
-                <StackPanel>
-                    <TextBlock Text="📚 Моя библиотека" FontFamily="{StaticResource Font.Heading}" FontSize="28" FontWeight="Bold"/>
-                </StackPanel>
-            </Grid>
+            
+            <TextBlock Text="📚 Моя библиотека" FontFamily="{StaticResource Font.Heading}" FontSize="28" FontWeight="Bold"/>
 
-            <!-- 🟡 Загрузка (ВЫНЕСЕНА ИЗ ItemsControl!) -->
-            <StackPanel Spacing="12" IsVisible="{Binding IsLoading}" HorizontalAlignment="Center" Margin="0,40">
-                <ProgressBar Classes="GGVoltProgress" Value="0" Maximum="100" Width="300" Height="6"/>
-                <TextBlock Text="⏳ Загрузка библиотеки..." Foreground="{StaticResource Text.Secondary}" HorizontalAlignment="Center"/>
+            <!--  АКТИВНЫЕ ЗАГРУЗКИ -->
+            <StackPanel Spacing="12" IsVisible="{Binding HasActiveDownloads}">
+                <TextBlock Text="⬇ Активные загрузки" FontFamily="{StaticResource Font.Heading}" FontSize="18" FontWeight="SemiBold"/>
+                
+                <ItemsControl ItemsSource="{Binding ActiveDownloads}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="api:GameDto">
+                            <Border Classes="GGVoltCard" Width="240" Margin="0,0,16,16">
+                                <StackPanel Spacing="10">
+                                    <Border Height="130" Background="{StaticResource BG.Hover}" CornerRadius="6" ClipToBounds="True">
+                                        <Image Source="{Binding CoverUrl}" Stretch="UniformToFill"/>
+                                    </Border>
+                                    <TextBlock Text="{Binding Title}" Foreground="{StaticResource Text.Primary}" 
+                                               FontFamily="{StaticResource Font.Heading}" FontSize="16"/>
+                                    <TextBlock Text="{Binding Type, StringFormat='Тип: {0}'}" 
+                                               Foreground="{StaticResource Text.Secondary}" FontSize="12"/>
+                                    <Button Classes="GGVoltBtnPrimary" Content="Скачать" HorizontalAlignment="Stretch"
+                                            Command="{Binding #Root.DataContext.StartDownloadCommand}"
+                                            CommandParameter="{Binding}"/>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
             </StackPanel>
 
-            <!-- 🔴 Ошибка -->
-            <Border Background="#2A0000" CornerRadius="8" Padding="16" IsVisible="{Binding HasError}">
+            <Border Height="1" Background="{StaticResource Border.Weak}" Margin="0,8" IsVisible="{Binding HasActiveDownloads}"/>
+
+            <!-- СПИСОК -->
+            <TextBlock Text="🎮 Игры и программы" FontFamily="{StaticResource Font.Heading}" FontSize="20" FontWeight="SemiBold"/>
+
+            <StackPanel Spacing="12" IsVisible="{Binding IsLoading}" HorizontalAlignment="Center" Margin="0,40">
+                <ProgressBar Classes="GGVoltProgress" Value="0" Maximum="100" Width="300" Height="6"/>
+                <TextBlock Text="⏳ Загрузка..." Foreground="{StaticResource Text.Secondary}" HorizontalAlignment="Center"/>
+            </StackPanel>
+
+            <Border Background="#2A0000" CornerRadius="8" Padding="16" IsVisible="{Binding HasError}" Margin="0,0,0,16">
                 <StackPanel Spacing="8">
-                    <TextBlock Text="⚠️ Ошибка загрузки" Foreground="Red" FontWeight="Bold"/>
-                    <TextBlock Text="{Binding ErrorMessage}" Foreground="#FF8A8A"/>
+                    <TextBlock Text="⚠️ Ошибка" Foreground="Red" FontWeight="Bold"/>
+                    <TextBlock Text="{Binding ErrorMessage}" Foreground="#FF8A8A" TextWrapping="Wrap"/>
                     <Button Classes="GGVoltBtnSecondary" Content="Повторить" Command="{Binding LoadLibraryCommand}" Width="120"/>
                 </StackPanel>
             </Border>
 
-            <!-- ✅ Список -->
-            <ItemsControl ItemsSource="{Binding Items}" IsVisible="{Binding IsLoading, Converter={x:Static BoolConverters.Not}}">
+            <ItemsControl ItemsSource="{Binding Items}" IsVisible="{Binding HasItems}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <WrapPanel HorizontalAlignment="Stretch" />
+                        <WrapPanel HorizontalAlignment="Stretch" VerticalAlignment="Top" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
-                    <DataTemplate x:DataType="models:LibraryItemDto">
+                    <DataTemplate>
                         <Border Classes="GGVoltCard" Width="240" Margin="0,0,16,16">
                             <StackPanel Spacing="10">
                                 <Border Height="130" Background="{StaticResource BG.Hover}" CornerRadius="6"/>
                                 <TextBlock Text="{Binding Title}" Foreground="{StaticResource Text.Primary}" FontFamily="{StaticResource Font.Heading}" FontSize="16"/>
                                 <TextBlock Text="{Binding Version}" Foreground="{StaticResource Text.Secondary}" FontSize="12"/>
-                                <Button Classes="GGVoltBtnSecondary" Content="{Binding ActionText}" HorizontalAlignment="Stretch"/>
+                                <Button Classes="GGVoltBtnSecondary" Content="{Binding ActionText}" HorizontalAlignment="Stretch"
+                                        Command="{Binding DataContext.StartDownloadCommand, ElementName=Root}"
+                                        CommandParameter="{Binding}"/>
                             </StackPanel>
                         </Border>
                     </DataTemplate>
