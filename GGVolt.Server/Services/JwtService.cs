@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using GGVolt.Core.Entities;
 using Microsoft.Extensions.Configuration;
@@ -10,6 +11,8 @@ namespace GGVolt.Server.Services;
 public interface IJwtService
 {
     string GenerateToken(User user);
+    string GenerateRefreshToken();
+    ClaimsPrincipal? ValidateRefreshToken(string token);
 }
 
 public class JwtService : IJwtService
@@ -38,5 +41,18 @@ public class JwtService : IJwtService
             signingCredentials: creds);
 
         return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+    public string GenerateRefreshToken()
+    {
+        var randomBytes = new byte[64];
+        using var rng = RandomNumberGenerator.Create();
+        rng.GetBytes(randomBytes);
+        return Convert.ToBase64String(randomBytes);
+    }
+    public ClaimsPrincipal? ValidateRefreshToken(string token)
+    {
+        // Для opaque refresh token валидация идёт через БД, не через JWT
+        // Этот метод оставлен для совместимости интерфейса
+        return null;
     }
 }

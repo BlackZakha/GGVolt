@@ -17,10 +17,14 @@ public partial class StoreViewModel : ViewModelBase
 
     [ObservableProperty] private bool _isLoading = true;
     [ObservableProperty] private string _errorMessage = string.Empty;
-    [ObservableProperty] private ObservableCollection<GameDto> _items = new();
     [ObservableProperty] private int _currentPage = 1;
     [ObservableProperty] private int _totalPages = 1;
     [ObservableProperty] private ContentType? _selectedType;
+    
+    // ✅ Добавлен NotifyPropertyChangedFor для HasItems
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasItems))]
+    private ObservableCollection<GameDto> _items = new();
 
     public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
     public bool HasItems => Items.Count > 0;
@@ -41,7 +45,9 @@ public partial class StoreViewModel : ViewModelBase
         try
         {
             var result = await _api.GetCatalogAsync(CurrentPage, 20, SelectedType, _cts.Token);
+            
             Items = new ObservableCollection<GameDto>(result.Items);
+            
             TotalPages = (int)Math.Ceiling(result.TotalCount / (double)result.PageSize);
         }
         catch (Exception ex)
@@ -52,8 +58,9 @@ public partial class StoreViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private void OpenGameDetail(GameDto game)
+    private void OpenGameDetail(GameDto? game)
     {
+        if (game == null) return;
         _onOpenGameDetail?.Invoke(game.Id);
     }
 
@@ -76,4 +83,4 @@ public partial class StoreViewModel : ViewModelBase
             await LoadCatalogAsync();
         }
     }
-}
+} 

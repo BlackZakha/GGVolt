@@ -43,10 +43,13 @@ public partial class MainWindowViewModel : ViewModelBase
         // ✅ Исправленная сигнатура EventHandler
         AuthPage.AuthCompleted += OnAuthCompleted;
 
-        StorePage = new StoreViewModel(api);
+        StorePage = new StoreViewModel(api, OnOpenGameDetail);
         System.Diagnostics.Debug.WriteLine("StoreViewModel создан");
         
-        LibraryPage = new LibraryViewModel(api, auth, downloadService, logger);
+        LibraryPage = new LibraryViewModel(
+            api, auth, 
+            serviceProvider.GetRequiredService<IDownloadService>(),
+            serviceProvider.GetRequiredService<ILogger<LibraryViewModel>>());
         System.Diagnostics.Debug.WriteLine("LibraryViewModel создан");
         
         GameDetailPage = new GameDetailViewModel(
@@ -102,12 +105,14 @@ public partial class MainWindowViewModel : ViewModelBase
     
     private void OnOpenGameDetail(Guid gameId)
     {
+        System.Diagnostics.Debug.WriteLine($"🎮 Переход к деталям игры {gameId}");
         _ = GameDetailPage.LoadGameAsync(gameId);
         CurrentPage = GameDetailPage;
     }
 
     private void OnNavigateBack()
     {
+        System.Diagnostics.Debug.WriteLine("← Возврат в магазин");
         CurrentPage = StorePage;
     }
 }

@@ -26,7 +26,6 @@ public class TokenStorage : ITokenStorage
         
         _logger?.LogInformation("📁 TokenStorage инициализирован: {Path}", _filePath);
         
-        // ✅ СИНХРОННАЯ загрузка токена при создании
         LoadTokenSynchronously();
     }
 
@@ -46,9 +45,8 @@ public class TokenStorage : ITokenStorage
             
             if (tokens != null && !string.IsNullOrEmpty(tokens.AccessToken))
             {
-                _session.SetToken(tokens.AccessToken);
-                _logger?.LogInformation("✅ Токен загружен при старте: {Token}..., IsAuthenticated={Auth}", 
-                    tokens.AccessToken.Substring(0, Math.Min(20, tokens.AccessToken.Length)),
+                _session.SetTokens(tokens.AccessToken, tokens.RefreshToken);
+                _logger?.LogInformation("✅ Токены загружены при старте, IsAuthenticated={Auth}", 
                     _session.IsAuthenticated);
             }
             else
@@ -78,16 +76,14 @@ public class TokenStorage : ITokenStorage
                 return;
             }
 
-            _logger?.LogInformation("💾 Сохранение токена...");
+            _logger?.LogInformation("💾 Сохранение токенов...");
             
             var json = JsonSerializer.Serialize(tokens);
             await File.WriteAllTextAsync(_filePath, json);
             
-            _session.SetToken(tokens.AccessToken);
+            _session.SetTokens(tokens.AccessToken, tokens.RefreshToken);
             
-            _logger?.LogInformation("✅ Токен сохранен: {Token}...", 
-                tokens.AccessToken.Substring(0, Math.Min(20, tokens.AccessToken.Length)));
-            _logger?.LogInformation("✅ IsAuthenticated={Auth}", _session.IsAuthenticated);
+            _logger?.LogInformation("✅ Токены сохранены, IsAuthenticated={Auth}", _session.IsAuthenticated);
         }
         catch (Exception ex)
         {
@@ -112,10 +108,8 @@ public class TokenStorage : ITokenStorage
             
             if (tokens != null && !string.IsNullOrEmpty(tokens.AccessToken))
             {
-                _session.SetToken(tokens.AccessToken);
-                _logger?.LogInformation("✅ Токен загружен: {Token}..., IsAuthenticated={Auth}", 
-                    tokens.AccessToken.Substring(0, Math.Min(20, tokens.AccessToken.Length)),
-                    _session.IsAuthenticated);
+                _session.SetTokens(tokens.AccessToken, tokens.RefreshToken);
+                _logger?.LogInformation("✅ Токены загружены, IsAuthenticated={Auth}", _session.IsAuthenticated);
             }
             else
             {
@@ -141,14 +135,14 @@ public class TokenStorage : ITokenStorage
     {
         try
         {
-            _logger?.LogInformation("🗑️ Очистка токена");
+            _logger?.LogInformation("🗑️ Очистка токенов");
             if (File.Exists(_filePath))
             {
                 File.Delete(_filePath);
                 _logger?.LogInformation("✅ Файл удален");
             }
             
-            _session.SetToken(null);
+            _session.ClearTokens();
             _logger?.LogInformation("✅ Сессия очищена, IsAuthenticated={Auth}", _session.IsAuthenticated);
         }
         catch (Exception ex)

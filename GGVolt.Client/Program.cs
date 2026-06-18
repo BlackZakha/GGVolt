@@ -32,8 +32,14 @@ internal static class Program
                 services.AddSingleton<ITokenAccessor, TokenSession>();
                 services.AddSingleton<ITokenStorage, TokenStorage>();
                 
-                // HTTP
-                services.AddTransient<AuthMessageHandler>();
+                // ✅ HTTP-клиент для auth-запросов (БЕЗ AuthMessageHandler)
+                services.AddHttpClient("GGVoltAuth", c =>
+                {
+                    c.BaseAddress = new Uri("http://localhost:5000/api/v1/");
+                    c.DefaultRequestHeaders.Add("Accept", "application/json");
+                });
+
+                // ✅ HTTP-клиент для API (С AuthMessageHandler)
                 services.AddHttpClient("GGVoltApi", c =>
                 {
                     c.BaseAddress = new Uri("http://localhost:5000/api/v1/");
@@ -41,8 +47,18 @@ internal static class Program
                 })
                 .AddHttpMessageHandler<AuthMessageHandler>();
 
+                // ✅ TokenRefresher использует GGVoltAuth (без handler)
+                services.AddHttpClient<ITokenRefresher, TokenRefresher>("GGVoltAuth");
+                
+                // ✅ AuthMessageHandler зависит от ITokenRefresher
+                services.AddTransient<AuthMessageHandler>();
+
+                // ✅ ApiService использует GGVoltApi (с handler)
                 services.AddHttpClient<IApiService, ApiService>("GGVoltApi");
+                
+                // ✅ AuthService использует GGVoltApi (с handler) — но НЕ вызывает refresh сам
                 services.AddHttpClient<IAuthService, AuthService>("GGVoltApi");
+                
                 services.AddSingleton<IDownloadService, DownloadService>();
                 services.AddSingleton<IArchiveService, ArchiveService>();
 
@@ -54,7 +70,6 @@ internal static class Program
                 services.AddTransient<AuthViewModel>();
                 services.AddTransient<GameDetailViewModel>();
 
-                // App
                 services.AddSingleton<App>();
                 services.AddTransient<MainWindow>();
             })

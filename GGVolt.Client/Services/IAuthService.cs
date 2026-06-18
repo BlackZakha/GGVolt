@@ -8,6 +8,7 @@ public interface IAuthService
 {
     bool IsAuthenticated { get; }
     string? AccessToken { get; }
+    string? RefreshToken { get; } // ✅ Новое свойство
     Task<AuthResponse> LoginAsync(LoginRequest req, CancellationToken ct = default);
     Task<AuthResponse> RegisterAsync(RegisterRequest req, CancellationToken ct = default);
     Task LogoutAsync();

@@ -21,13 +21,12 @@ public class AuthService : IAuthService
         _storage = storage;
         _session = session;
         _logger = logger;
-        
-        // ✅ Токен уже загружен синхронно в TokenStorage
         _logger?.LogInformation("🔐 AuthService создан, IsAuthenticated={Auth}", _session.IsAuthenticated);
     }
 
     public bool IsAuthenticated => _session.IsAuthenticated;
     public string? AccessToken => _session.AccessToken;
+    public string? RefreshToken => _session.RefreshToken;
 
     public async Task<AuthResponse> LoginAsync(LoginRequest req, CancellationToken ct = default)
     {
@@ -38,21 +37,15 @@ public class AuthService : IAuthService
         if (!resp.IsSuccessStatusCode)
         {
             var error = await resp.Content.ReadAsStringAsync(ct);
-            _logger?.LogWarning("❌ Login failed: {StatusCode} - {Error}", resp.StatusCode, error);
             throw new HttpRequestException($"Login failed: {resp.StatusCode} - {error}");
         }
 
         var tokens = await resp.Content.ReadFromJsonAsync<AuthResponse>(ct);
         
         if (tokens == null || string.IsNullOrEmpty(tokens.AccessToken))
-        {
-            _logger?.LogError("❌ Сервер вернул пустой токен!");
             throw new InvalidOperationException("Сервер не вернул access token");
-        }
 
-        _logger?.LogInformation("✅ Вход успешен, токен получен: {Token}...", 
-            tokens.AccessToken.Substring(0, Math.Min(20, tokens.AccessToken.Length)));
-        
+        _logger?.LogInformation("✅ Вход успешен");
         await _storage.SaveAsync(tokens);
         return tokens;
     }
@@ -65,11 +58,9 @@ public class AuthService : IAuthService
         if (!regResp.IsSuccessStatusCode)
         {
             var error = await regResp.Content.ReadAsStringAsync(ct);
-            _logger?.LogWarning("❌ Register failed: {StatusCode} - {Error}", regResp.StatusCode, error);
             throw new HttpRequestException($"Register failed: {regResp.StatusCode} - {error}");
         }
 
-        _logger?.LogInformation("✅ Регистрация успешна, выполняем вход");
         return await LoginAsync(new LoginRequest(req.Username, req.Password), ct);
     }
 

@@ -14,6 +14,11 @@ public record RegisterRequest(
     [property: JsonPropertyName("password")] string Password
 );
 
+// ✅ Добавляем RefreshTokenRequest
+public record RefreshTokenRequest(
+    [property: JsonPropertyName("refreshToken")] string RefreshToken
+);
+
 public record AuthResponse(
     [property: JsonPropertyName("token")] string AccessToken,
     [property: JsonPropertyName("refreshToken")] string RefreshToken,

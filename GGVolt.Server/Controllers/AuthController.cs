@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using GGVolt.Core.Entities;
 using GGVolt.Core.Constants;
 using GGVolt.Infrastructure.Repositories;
@@ -63,5 +64,44 @@ public class AuthController : ControllerBase
 
         var token = _jwt.GenerateToken(user);
         return Ok(new AuthResponse(token, "", 60));
+    }
+    
+    [HttpPost("refresh")]
+    [ProducesResponseType(200, Type = typeof(AuthResponse))]
+    [ProducesResponseType(401)]
+    public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequest req, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(req.RefreshToken))
+            return Unauthorized(new { error = "Refresh token отсутствует" });
+
+        // Ищем пользователя с таким refresh token
+        var user = await _userRepo.GetQueryable()
+            .FirstOrDefaultAsync(u => u.RefreshToken == req.RefreshToken, ct);
+
+        if (user == null)
+        {
+            _logger.LogWarning("Попытка refresh с невалидным токеном");
+            return Unauthorized(new { error = "Невалидный refresh token" });
+        }
+
+        if (user.RefreshTokenExpiresAt <= DateTime.UtcNow)
+        {
+            _logger.LogWarning("Попытка refresh с протухшим токеном для {UserId}", user.Id);
+            user.RefreshToken = null;
+            user.RefreshTokenExpiresAt = null;
+            await _userRepo.SaveChangesAsync(ct);
+            return Unauthorized(new { error = "Refresh token истёк" });
+        }
+
+        // Генерируем новую пару токенов
+        var newAccessToken = _jwt.GenerateToken(user);
+        var newRefreshToken = _jwt.GenerateRefreshToken();
+        
+        user.RefreshToken = newRefreshToken;
+        user.RefreshTokenExpiresAt = DateTime.UtcNow.AddDays(7);
+        await _userRepo.SaveChangesAsync(ct);
+
+        _logger.LogInformation("Токены обновлены для пользователя {UserId}", user.Id);
+        return Ok(new AuthResponse(newAccessToken, newRefreshToken, 60));
     }
 }

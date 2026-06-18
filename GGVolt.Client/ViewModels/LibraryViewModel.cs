@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using GGVolt.Client.Helpers;
@@ -60,7 +61,7 @@ public partial class LibraryViewModel : ViewModelBase
     private async Task LoadLibraryAsync()
     {
         _logger.LogInformation("🔄 LoadLibraryAsync вызван, IsAuthenticated={Auth}", _auth.IsAuthenticated);
-        
+    
         if (!_auth.IsAuthenticated)
         {
             _logger.LogWarning("⚠️ Пользователь не авторизован!");
@@ -71,14 +72,22 @@ public partial class LibraryViewModel : ViewModelBase
         _logger.LogInformation("✅ Начинаем загрузку библиотеки...");
         IsLoading = true;
         ErrorMessage = string.Empty;
-        
+    
         try
         {
             var items = await _api.GetLibraryAsync(_cts.Token);
             _logger.LogInformation("📦 Загружено {Count} элементов", items.Count);
-            
-            Items = new ObservableCollection<GameDto>(items);
+        
+            Items.Clear();
+            foreach (var item in items) Items.Add(item);
+        
             ErrorMessage = string.Empty;
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+        {
+            _logger.LogError(ex, "❌ 401 Unauthorized - сессия истекла");
+            ErrorMessage = "Сессия истекла. Пожалуйста, войдите снова.";
+            // Можно добавить кнопку "Войти снова" или автоматически перенаправить на страницу входа
         }
         catch (Exception ex)
         {
