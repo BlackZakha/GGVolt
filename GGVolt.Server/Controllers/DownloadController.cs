@@ -35,7 +35,6 @@ public class DownloadController : ControllerBase
             .AsNoTracking()
             .AnyAsync(l => l.UserId == userId && l.GameId == gameId && l.Status == LicenseStatus.Active, ct);
 
-        // Forbid() не принимает объект. Для API лучше вернуть StatusCode(403, ...)
         if (!hasLicense)
             return StatusCode(403, new { error = "У вас нет лицензии на этот продукт" });
 
@@ -43,13 +42,21 @@ public class DownloadController : ControllerBase
         if (game == null || string.IsNullOrEmpty(game.StorageKey))
             return NotFound(new { error = "Продукт не найден или не имеет контента" });
 
+        _logger.LogInformation("🔗 Генерация ссылки для игры {GameId}, StorageKey={StorageKey}", 
+            gameId, game.StorageKey);
+
         // Генерируем реальную временную ссылку через MinIO
         var expiry = TimeSpan.FromMinutes(15);
         var signedUrl = await _storage.GeneratePresignedUrlAsync(game.StorageKey, expiry, ct);
+    
+        _logger.LogInformation("✅ Presigned URL: {Url}", signedUrl);
+    
+        if (string.IsNullOrEmpty(signedUrl))
+        {
+            _logger.LogError("❌ Presigned URL пустой!");
+            return StatusCode(500, new { error = "Не удалось сгенерировать ссылку для скачивания" });
+        }
         
-        _logger.LogInformation("Пользователь {UserId} получил ссылку для {GameId} (истекает через {Expiry})", 
-            userId, gameId, expiry);
-            
         return Ok(new DownloadLinkResponse(signedUrl, expiry, game.SizeBytes));
     }
 }

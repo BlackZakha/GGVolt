@@ -11,6 +11,7 @@ public class License : BaseEntity
     public Game Game { get; set; } = null!;
     
     public LicenseStatus Status { get; set; } = LicenseStatus.Active;
+    public decimal PricePaid { get; set; }
     public DateTime PurchasedAt { get; set; }
     public DateTime? ExpiresAt { get; set; } // null = навсегда
 }

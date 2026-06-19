@@ -9,7 +9,6 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using GGVolt.Client.Helpers;
@@ -26,7 +25,12 @@ public partial class LibraryViewModel : ViewModelBase
 
     [ObservableProperty] private bool _isLoading;
     [ObservableProperty] private string _errorMessage = string.Empty;
-    [ObservableProperty] private ObservableCollection<GameDto> _items = new();
+    
+    // ✅ Добавлен NotifyPropertyChangedFor для HasItems
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasItems))]
+    private ObservableCollection<GameDto> _items = new();
+    
     [ObservableProperty] private ObservableCollection<DownloadItem> _activeDownloads = new();
     [ObservableProperty] private bool _hasActiveDownloads;
 
@@ -61,7 +65,7 @@ public partial class LibraryViewModel : ViewModelBase
     private async Task LoadLibraryAsync()
     {
         _logger.LogInformation("🔄 LoadLibraryAsync вызван, IsAuthenticated={Auth}", _auth.IsAuthenticated);
-    
+        
         if (!_auth.IsAuthenticated)
         {
             _logger.LogWarning("⚠️ Пользователь не авторизован!");
@@ -72,22 +76,15 @@ public partial class LibraryViewModel : ViewModelBase
         _logger.LogInformation("✅ Начинаем загрузку библиотеки...");
         IsLoading = true;
         ErrorMessage = string.Empty;
-    
+        
         try
         {
             var items = await _api.GetLibraryAsync(_cts.Token);
             _logger.LogInformation("📦 Загружено {Count} элементов", items.Count);
-        
-            Items.Clear();
-            foreach (var item in items) Items.Add(item);
-        
+            
+            // ✅ Заменяем коллекцию целиком
+            Items = new ObservableCollection<GameDto>(items);
             ErrorMessage = string.Empty;
-        }
-        catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-        {
-            _logger.LogError(ex, "❌ 401 Unauthorized - сессия истекла");
-            ErrorMessage = "Сессия истекла. Пожалуйста, войдите снова.";
-            // Можно добавить кнопку "Войти снова" или автоматически перенаправить на страницу входа
         }
         catch (Exception ex)
         {
@@ -108,7 +105,21 @@ public partial class LibraryViewModel : ViewModelBase
         {
             _logger.LogInformation("⬇️ Начало загрузки {Title}", game.Title);
             var link = await _api.GetDownloadLinkAsync(game.Id, _cts.Token);
-            _logger.LogInformation("✅ Получена ссылка для загрузки");
+        
+            _logger.LogInformation("✅ Получена ссылка: {Url} (Size: {Size} bytes)", 
+                link.SignedUrl, link.SizeBytes);
+        
+            // ✅ Проверяем, что URL абсолютный
+            if (!Uri.IsWellFormedUriString(link.SignedUrl, UriKind.Absolute))
+            {
+                _logger.LogWarning("⚠️ URL не абсолютный: {Url}. Пытаемся исправить...", link.SignedUrl);
+            
+                // Если URL относительный, добавляем MinIO endpoint
+                var minioEndpoint = "http://localhost:9000";
+                link = link with { SignedUrl = $"{minioEndpoint}/{link.SignedUrl.TrimStart('/')}" };
+            
+                _logger.LogInformation("✅ Исправленный URL: {Url}", link.SignedUrl);
+            }
 
             var installPath = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
@@ -118,7 +129,7 @@ public partial class LibraryViewModel : ViewModelBase
                 game.Id,
                 game.Title,
                 game.Type.ToString(),
-                link.SignedUrl,
+                link.SignedUrl, // ✅ Теперь точно абсолютный URL
                 installPath,
                 link.SizeBytes,
                 _cts.Token);

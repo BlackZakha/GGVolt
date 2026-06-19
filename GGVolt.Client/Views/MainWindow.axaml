@@ -60,7 +60,6 @@
                         
                         <Button Classes="GGVoltBtnSecondary" Content=" Магазин" HorizontalAlignment="Stretch" Command="{Binding NavigateToStoreCommand}"/>
                         <Button Classes="GGVoltBtnSecondary" Content=" Библиотека" HorizontalAlignment="Stretch" Command="{Binding NavigateToLibraryCommand}"/>
-                        <Button Classes="GGVoltBtnSecondary" Content=" Сообщество" HorizontalAlignment="Stretch" Command="{Binding NavigateToLibraryCommand}"/>
                         <Button Classes="GGVoltBtnSecondary" Content=" Настройки" HorizontalAlignment="Stretch" Command="{Binding NavigateToSettingsCommand}"/>
                         
                         <Border Height="1" Background="{StaticResource Border.Weak}" Margin="0,12"/>
@@ -75,8 +74,6 @@
                     <Grid ColumnDefinitions="*,Auto" PointerPressed="MoveWindowPointerPressed">
                         <TextBox Classes="GGVoltInput" Grid.Column="0" Watermark="🔍 Поиск..." Margin="0,0,16,0"/>
                         <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="14" VerticalAlignment="Center">
-                            <TextBlock Text="💳 0 ₽" Foreground="{StaticResource Text.Primary}" VerticalAlignment="Center"/>
-                            <Button Classes="GGVoltBtnSecondary" Content="🔔" Padding="8"/>
                             <StackPanel Orientation="Horizontal" Spacing="5">
                                 <Button Content="󰖰"
                                         Width="30"

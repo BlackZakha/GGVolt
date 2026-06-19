@@ -12,4 +12,5 @@ public interface IApiService
     Task<GameDetailDto> GetGameDetailAsync(Guid gameId, CancellationToken ct = default);
     Task<List<GameDto>> GetLibraryAsync(CancellationToken ct = default);
     Task<DownloadLinkResponse> GetDownloadLinkAsync(Guid gameId, CancellationToken ct = default);
+    Task<PurchaseResponse> PurchaseGameAsync(Guid gameId, bool confirmPayment, CancellationToken ct = default);
 }

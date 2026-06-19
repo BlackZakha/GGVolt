@@ -11,6 +11,7 @@ public class MinioFileStorageService : IFileStorageService, IDisposable
 {
     private readonly IMinioClient _minio;
     private readonly MinioSettings _settings;
+    private readonly string? _externalEndpoint;
     private readonly ILogger<MinioFileStorageService> _logger;
 
     public MinioFileStorageService(IOptions<MinioSettings> options, ILogger<MinioFileStorageService> logger)
@@ -31,21 +32,27 @@ public class MinioFileStorageService : IFileStorageService, IDisposable
     {
         try
         {
-            if (!await FileExistsAsync(objectKey, ct))
-                throw new FileNotFoundException($"Файл '{objectKey}' не найден в хранилище");
+            _logger.LogInformation("Генерация presigned URL для {ObjectKey}", objectKey);
 
-            // В SDK v6 CancellationToken не передаётся отдельным параметром
             var args = new PresignedGetObjectArgs()
                 .WithBucket(_settings.BucketName)
                 .WithObject(objectKey)
                 .WithExpiry((int)expiry.TotalSeconds);
 
-            return await _minio.PresignedGetObjectAsync(args);
+            var url = await _minio.PresignedGetObjectAsync(args);
+        
+            // ✅ ЗАМЕНЯЕМ minio:9000 на localhost:9000 для клиента
+            var externalEndpoint = _externalEndpoint ?? "localhost:9000";
+            url = url.Replace("minio:9000", externalEndpoint);
+        
+            _logger.LogInformation("✅ Presigned URL (для клиента): {Url}", url);
+
+            return url;
         }
-        catch (MinioException ex)
+        catch (Exception ex)
         {
-            _logger.LogError(ex, "Ошибка генерации Pre-Signed URL для {ObjectKey}", objectKey);
-            throw new InvalidOperationException("Не удалось создать ссылку для скачивания", ex);
+            _logger.LogError(ex, "❌ Ошибка при генерации presigned URL");
+            throw;
         }
     }
 

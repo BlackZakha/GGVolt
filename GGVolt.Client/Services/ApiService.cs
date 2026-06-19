@@ -5,14 +5,20 @@ using System.Net.Http.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using GGVolt.Client.Models.Api;
+using Microsoft.Extensions.Logging;
 
 namespace GGVolt.Client.Services;
 
 public class ApiService : IApiService
 {
     private readonly HttpClient _http;
+    private readonly ILogger? _logger;
 
-    public ApiService(HttpClient http) => _http = http;
+    public ApiService(HttpClient http, ILogger<ApiService>? logger = null)
+    {
+        _http = http;
+        _logger = logger;
+    } 
 
     public async Task<PagedResponse<GameDto>> GetCatalogAsync(int page = 1, int pageSize = 20, ContentType? type = null, CancellationToken ct = default)
     {
@@ -41,7 +47,16 @@ public class ApiService : IApiService
         response.EnsureSuccessStatusCode();
 
         var result = await response.Content.ReadFromJsonAsync<DownloadLinkResponse>(ct);
-        return result ?? throw new InvalidOperationException("Сервер вернул пустой ответ");
+    
+        // ✅ Логируем полученный URL
+        System.Diagnostics.Debug.WriteLine($"🔗 Получен DownloadLink: SignedUrl='{result?.SignedUrl}', Size={result?.SizeBytes}");
+    
+        if (result == null || string.IsNullOrEmpty(result.SignedUrl))
+        {
+            throw new InvalidOperationException("Сервер вернул пустой signedUrl");
+        }
+    
+        return result ?? throw new InvalidOperationException("Пустой ответ от сервера");
     }
     
     public async Task<GameDetailDto> GetGameDetailAsync(Guid gameId, CancellationToken ct = default)
@@ -51,5 +66,24 @@ public class ApiService : IApiService
 
         var result = await response.Content.ReadFromJsonAsync<GameDetailDto>(ct);
         return result ?? throw new InvalidOperationException("Сервер вернул пустой ответ");
+    }
+    
+    public async Task<PurchaseResponse> PurchaseGameAsync(Guid gameId, bool confirmPayment, CancellationToken ct = default)
+    {
+        var url = $"games/{gameId}/purchase";
+        _logger?.LogInformation("📤 POST {Url} с confirmPayment={Confirm}", url, confirmPayment);
+    
+        var response = await _http.PostAsJsonAsync(url, new PurchaseRequest(confirmPayment), ct);
+    
+        var responseContent = await response.Content.ReadAsStringAsync(ct);
+        _logger?.LogInformation("📥 Ответ: {StatusCode} - {Content}", response.StatusCode, responseContent);
+    
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new HttpRequestException($"Purchase failed: {response.StatusCode} - {responseContent}");
+        }
+
+        var result = await response.Content.ReadFromJsonAsync<PurchaseResponse>(ct);
+        return result ?? throw new InvalidOperationException("Пустой ответ от сервера");
     }
 }

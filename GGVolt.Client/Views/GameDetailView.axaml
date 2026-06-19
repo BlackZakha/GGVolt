@@ -114,10 +114,33 @@
                             </StackPanel>
                         </Border>
 
+                        <!-- Кнопка покупки -->
                         <Button Classes="GGVoltBtnPrimary" Content="{Binding PurchaseButtonText}" 
-                                Command="{Binding PurchaseCommand}" IsEnabled="{Binding CanPurchase}" 
+                                Command="{Binding PurchaseCommand}" 
+                                IsEnabled="{Binding CanPurchase}" 
                                 HorizontalAlignment="Stretch" Padding="16"/>
                         
+                        <!-- Индикатор загрузки -->
+                        <StackPanel Spacing="8" IsVisible="{Binding IsPurchasing}">
+                            <ProgressBar Classes="GGVoltProgress" Value="0" Maximum="100" Height="4" IsIndeterminate="True"/>
+                            <TextBlock Text="Обработка покупки..." Foreground="{StaticResource Text.Secondary}" 
+                                       FontSize="12" HorizontalAlignment="Center"/>
+                        </StackPanel>
+
+                        <!-- Сообщение об успехе -->
+                        <Border Background="#0A2A1A" CornerRadius="8" Padding="12" 
+                                IsVisible="{Binding HasSuccess}" BorderBrush="#00FF88" BorderThickness="1">
+                            <TextBlock Text="{Binding SuccessMessage}" Foreground="#00FF88" 
+                                       FontSize="13" TextWrapping="Wrap"/>
+                        </Border>
+
+                        <!-- Сообщение об ошибке -->
+                        <Border Background="#2A0000" CornerRadius="8" Padding="12" 
+                                IsVisible="{Binding HasError}" BorderBrush="Red" BorderThickness="1">
+                            <TextBlock Text="{Binding ErrorMessage}" Foreground="#FF8A8A" 
+                                       FontSize="13" TextWrapping="Wrap"/>
+                        </Border>
+
                         <TextBlock Text="Мгновенная доставка • Без DRM • Поддержка 24/7" 
                                    Foreground="{StaticResource Text.Secondary}" FontSize="11" 
                                    TextWrapping="Wrap" TextAlignment="Center"/>

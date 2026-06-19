@@ -4,7 +4,7 @@ public class MinioSettings
 {
     public const string Section = "Minio";
     
-    public string Endpoint { get; set; } = "localhost:9000";
+    public string Endpoint { get; set; } = "minio:9000";
     public string AccessKey { get; set; } = "minioadmin";
     public string SecretKey { get; set; } = "minioadmin123";
     public string BucketName { get; set; } = "ggvolt-content";
